@@ -9,6 +9,10 @@ from .utils import batch_generator
 
 
 class BaseModel(object):
+
+    losses = []
+    accuracies = []
+
     def save(self, save_path):
         import pickle
 
@@ -332,6 +336,8 @@ class AbstractSupervisedDBN(BaseEstimator, BaseModel):
         :param pre_train: bool
         :return:
         """
+        self.X_train = X
+        self.y_train = y
         if pre_train:
             self.pre_train(X)
         self._fine_tuning(X, y)
@@ -466,6 +472,7 @@ class NumPyAbstractSupervisedDBN(AbstractSupervisedDBN):
 
             if self.verbose:
                 error = np.mean(np.sum(matrix_error, 1))
+                self.losses.append(error)
                 print(">> Epoch %d finished \tANN training loss %f" % (iteration, error))
 
     def _backpropagation(self, input_vector, label):
